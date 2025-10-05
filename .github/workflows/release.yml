@@ -35,6 +35,7 @@ jobs:
           context: .
           file: Dockerfile-fail2ban
           push: false
+          pull: true
           load: true
           platforms: linux/amd64
           tags: fail2ban-scan:${{ github.sha }}
@@ -93,6 +94,7 @@ jobs:
           context: .
           file: Dockerfile-fail2ban
           push: true
+          pull: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
