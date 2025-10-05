@@ -23,29 +23,32 @@ Dockerized **Fail2ban** tuned for systemd **journald** on the host and **iptable
 
    ```yml
    services:
-       fail2ban:
-         image: ghcr.io/alaub81/fail2ban-dockerized:latest
-         network_mode: host
-         cap_add:
-           - NET_ADMIN
-           - NET_RAW
-         restart: always
-         env_file:
-           - fail2ban.env
-         volumes:
-           # Fail2ban-Config + State
-           - ./data/fail2ban/fail2ban.d/:/etc/fail2ban/fail2ban.d:ro
-           - ./data/fail2ban/jail.d/:/etc/fail2ban/jail.d:ro
-           - data_fail2ban:/var/lib/fail2ban
-           # Host-Journal (volatile + persistent) and machine-id
-           - /run/log/journal:/run/log/journal:ro
-           - /var/log/journal:/var/log/journal:ro
-           - /etc/machine-id:/etc/machine-id:ro
-         logging:
-           # Fail2ban-Logs into Host-Journal
-           driver: journald
-           options:
-             tag: "fail2ban-DC"
+     fail2ban:
+       image: ghcr.io/alaub81/fail2ban-dockerized:latest
+       network_mode: host
+       cap_add:
+         - NET_ADMIN
+         - NET_RAW
+       restart: always
+       env_file:
+         - fail2ban.env
+       volumes:
+         # Fail2ban-Config + State
+         - ./data/fail2ban/fail2ban.d/:/etc/fail2ban/fail2ban.d:ro
+         - ./data/fail2ban/jail.d/:/etc/fail2ban/jail.d:ro
+         - data_fail2ban:/var/lib/fail2ban
+         # Host-Journal (volatile + persistent) and machine-id
+         - /run/log/journal:/run/log/journal:ro
+         - /var/log/journal:/var/log/journal:ro
+         - /etc/machine-id:/etc/machine-id:ro
+       logging:
+         # Fail2ban-Logs into Host-Journal
+         driver: journald
+         options:
+           tag: "fail2ban-DC"
+
+   volumes:
+     data_fail2ban:
 
    ```
 
@@ -65,11 +68,14 @@ Dockerized **Fail2ban** tuned for systemd **journald** on the host and **iptable
    cp data/fail2ban/jail.d/10-sshd.local.example data/fail2ban/jail.d/10-sshd.local
    ```
 
-   Recommended when using host journald:
+   Recommended configuration:
 
    ```ini
-   # in 10-sshd.local
-   backend = systemd
+   [sshd]
+   enabled   = true
+   mode      = aggressive
+   port      = ssh
+   maxretry  = 3
    ```
 
    Adjust ports if you use non‑standard SSH ports (e.g., `2222`).
@@ -113,17 +119,6 @@ Typical files:
   ```
 
 - Using file logs instead: provide `logpath` and mount the log file into the container.
-
-### iptables chains
-
-- **Host SSH**: use the default `chain = INPUT` (already implied by examples).
-- **Protecting container‑exposed services**: consider
-
-  ```ini
-  chain = DOCKER-USER
-  ```
-
-  which is evaluated before Docker’s own rules for bridged ports.
 
 ## Configuration
 
