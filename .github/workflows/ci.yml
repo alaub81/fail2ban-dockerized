@@ -71,6 +71,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-fs.sarif
+          category: trivy-fs
       - name: Trivy FS (enforce severity)
         uses: aquasecurity/trivy-action@0.28.0
         with:
@@ -94,6 +95,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-image.sarif
+          category: trivy-image
       - name: Trivy Image (enforce severity)
         uses: aquasecurity/trivy-action@0.28.0
         with:
