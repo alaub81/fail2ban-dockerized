@@ -7,11 +7,12 @@ RUN apt-get update && \
   apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY fail2ban-entrypoint.sh /usr/local/bin/fail2ban-entrypoint.sh
-RUN set -Eeuo pipefail; \
+
+RUN set -euo; \
   chmod +x /usr/local/bin/fail2ban-entrypoint.sh; \
   mkdir -p /etc/fail2ban; \
   printf '%s\n' \
-  '[Definition]' \
+  '[DEFAULT]' \
   'loglevel = INFO' \
   'logtarget = STDOUT' \
   > /etc/fail2ban/fail2ban.local && \

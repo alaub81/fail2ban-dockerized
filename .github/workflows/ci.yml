@@ -8,7 +8,7 @@ on:
 
 permissions:
   contents: read
-  security-events: write # für SARIF Upload
+  security-events: write
 
 jobs:
   lint:
