@@ -1,0 +1,25 @@
+[DEFAULT]
+# Mailing
+#destemail = root
+#action    = %(action_mwl)s
+
+# Quelle ist das HOST-Journal (per Mount), nicht Logdateien:
+#backend = systemd           
+
+# iptables (nft) Aktionen für Host-SSH (INPUT):
+#banaction          = iptables-multiport
+#banaction_allports = iptables-allports
+
+# Schwellenwerte
+bantime           = 1h
+findtime          = 10m
+maxretry          = 5
+bantime.increment = true
+# Optional feinjustieren:
+# bantime.factor     = 2
+# bantime.maxtime    = 14d
+
+# eigene Netze nie bannen
+ignoreip = 127.0.0.1/8 ::1
+
+allowipv6 = no

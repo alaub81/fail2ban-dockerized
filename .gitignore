@@ -1,0 +1,3 @@
+fail2ban.env
+data/fail2ban/jail.d/*.local
+.DS_Store
