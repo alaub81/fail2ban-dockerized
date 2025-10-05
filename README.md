@@ -16,7 +16,40 @@ Dockerized **Fail2ban** tuned for systemd **journald** on the host and **iptable
 
 ## Quick start
 
-1. **Configure environment**
+1. **Docker Compose File**
+
+   - use one one of the docker-compose.yml files
+   - here is an example if you just like to pull the published images:
+
+   ```yml
+   services:
+       fail2ban:
+         image: ghcr.io/alaub81/fail2ban-dockerized:latest
+         network_mode: host
+         cap_add:
+           - NET_ADMIN
+           - NET_RAW
+         restart: always
+         env_file:
+           - fail2ban.env
+         volumes:
+           # Fail2ban-Config + State
+           - ./data/fail2ban/fail2ban.d/:/etc/fail2ban/fail2ban.d:ro
+           - ./data/fail2ban/jail.d/:/etc/fail2ban/jail.d:ro
+           - data_fail2ban:/var/lib/fail2ban
+           # Host-Journal (volatile + persistent) and machine-id
+           - /run/log/journal:/run/log/journal:ro
+           - /var/log/journal:/var/log/journal:ro
+           - /etc/machine-id:/etc/machine-id:ro
+         logging:
+           # Fail2ban-Logs into Host-Journal
+           driver: journald
+           options:
+             tag: "fail2ban-DC"
+
+   ```
+
+2. **Configure environment**
    Create a local env file and adjust values:
 
    ```bash
@@ -24,7 +57,7 @@ Dockerized **Fail2ban** tuned for systemd **journald** on the host and **iptable
    # edit fail2ban.env (SMTP host/user, recipient, etc.)
    ```
 
-2. **Enable SSH protection**
+3. **Enable SSH protection**
    Create your SSH jail from the example:
 
    ```bash
@@ -41,7 +74,7 @@ Dockerized **Fail2ban** tuned for systemd **journald** on the host and **iptable
 
    Adjust ports if you use non‑standard SSH ports (e.g., `2222`).
 
-3. **Start with Docker Compose**
+4. **Start with Docker Compose**
 
    ```bash
    # pull a published image:
@@ -50,7 +83,7 @@ Dockerized **Fail2ban** tuned for systemd **journald** on the host and **iptable
    docker compose -f docker-compose.dev.yml up -d
    ```
 
-4. **Verify**
+5. **Verify**
 
    ```bash
    docker logs -f <container>
@@ -73,7 +106,7 @@ Typical files:
 
 ### Journald vs file backend
 
-- Using host **journald**: set in your jail(s)
+- Using host **journald** is the standard backend of the image
 
   ```ini
   backend = systemd
