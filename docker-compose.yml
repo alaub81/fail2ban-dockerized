@@ -1,9 +1,6 @@
 services:
   fail2ban:
-    build:
-      context: .
-      dockerfile: Dockerfile-fail2ban
-    image: fail2ban-journald:latest
+    image: ghcr.io/alaub81/fail2ban-dockerized:latest
     network_mode: host
     cap_add:
       - NET_ADMIN

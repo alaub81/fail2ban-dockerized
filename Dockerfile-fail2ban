@@ -8,7 +8,7 @@ RUN apt-get update && \
 
 COPY fail2ban-entrypoint.sh /usr/local/bin/fail2ban-entrypoint.sh
 
-RUN set -euo; \
+RUN set -eu; \
   chmod +x /usr/local/bin/fail2ban-entrypoint.sh; \
   mkdir -p /etc/fail2ban; \
   printf '%s\n' \
