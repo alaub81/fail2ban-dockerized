@@ -144,7 +144,7 @@ jobs:
       - name: Trigger a failed SSH auth in the test log
         run: |
           sleep 5
-          printf "$(date '+%b %e %T') runner sshd[12345]: Failed password for invalid user e2e from 203.0.113.77 port 4242 ssh2\n" >> e2e/test-auth.log
+          printf '%s\n' "$(date '+%b %e %T') runner sshd[12345]: Failed password for invalid user e2e from 203.0.113.77 port 4242 ssh2" >> e2e/test-auth.log
           sleep 5
 
       - name: Assert ban is active
