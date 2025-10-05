@@ -7,24 +7,24 @@ RUN apt-get update && \
   apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY fail2ban-entrypoint.sh /usr/local/bin/fail2ban-entrypoint.sh
-RUN set -e; \
+RUN set -Eeuo pipefail; \
   chmod +x /usr/local/bin/fail2ban-entrypoint.sh; \
-  cat > /etc/fail2ban/fail2ban.local <<EOF
-[DEFAULT]
-loglevel = INFO
-logtarget = STDOUT
-EOF
-RUN set -e; \
-  cat > /etc/fail2ban/jail.local <<EOF
-[DEFAULT]
-destemail = root
-action    = %(action_mwl)s
-backend = systemd
-bantime           = 1h
-findtime          = 10m
-maxretry          = 5
-bantime.increment = true
-ignoreip = 127.0.0.1/8 ::1
-EOF
+  mkdir -p /etc/fail2ban; \
+  printf '%s\n' \
+  '[Definition]' \
+  'loglevel = INFO' \
+  'logtarget = STDOUT' \
+  > /etc/fail2ban/fail2ban.local && \
+  printf '%s\n' \
+  '[DEFAULT]' \
+  'destemail = root' \
+  'action    = %(action_mwl)s' \
+  'backend   = systemd' \
+  'bantime   = 1h' \
+  'findtime  = 10m' \
+  'maxretry  = 5' \
+  'bantime.increment = true' \
+  'ignoreip  = 127.0.0.1/8 ::1' \
+  > /etc/fail2ban/jail.local
 
 ENTRYPOINT ["/usr/local/bin/fail2ban-entrypoint.sh"]
