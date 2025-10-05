@@ -28,15 +28,12 @@ password ${MSMTP_PASSWORD}
 tls_starttls ${MSMTP_STARTTLS}
 aliases /etc/msmtp-aliases
 EOF
-
 chmod 600 /etc/msmtprc
-
 
 cat > /etc/msmtp-aliases <<EOF
 root: ${F2B_DESTEMAIL}
 default: ${F2B_DESTEMAIL}
 EOF
-
 
 # Exec fail2ban in foreground
 exec /usr/bin/fail2ban-server -f

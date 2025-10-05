@@ -1,0 +1,104 @@
+name: CI (lint, build, trivy)
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write # für SARIF Upload
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: actionlint
+        uses: docker://rhysd/actionlint:latest
+      - name: yamllint
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          format: github
+          file_or_dir: "."
+      - name: hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile-fail2ban
+      - name: shellcheck
+        uses: ludeeus/action-shellcheck@2.0.0
+        with:
+          scandir: .
+        env:
+          SHELLCHECK_OPTS: -S style
+
+  build-and-scan:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Build lokales AMD64-Image und in den lokalen Docker-Daemon "loaden"
+      - name: Build (load for scanning)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile-fail2ban
+          push: false
+          load: true
+          platforms: linux/amd64
+          tags: fail2ban-ci:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # --- Trivy: FS-Scan (Repo) -> SARIF + Fail on HIGH/CRITICAL ---
+      - name: Trivy FS (generate SARIF)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: sarif
+          output: trivy-fs.sarif
+          exit-code: "0"
+          hide-progress: true
+      - name: Upload FS SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-fs.sarif
+      - name: Trivy FS (enforce severity)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"
+          hide-progress: true
+
+      # --- Trivy: Image-Scan (lokales Tag) -> SARIF + Fail on HIGH/CRITICAL ---
+      - name: Trivy Image (generate SARIF)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: fail2ban-ci:${{ github.sha }}
+          format: sarif
+          output: trivy-image.sarif
+          exit-code: "0"
+          hide-progress: true
+      - name: Upload Image SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-image.sarif
+      - name: Trivy Image (enforce severity)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: fail2ban-ci:${{ github.sha }}
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"
+          hide-progress: true

@@ -1,0 +1,23 @@
+version: 2
+updates:
+  # 1) GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "05:00"
+      timezone: "Europe/Berlin"
+    open-pull-requests-limit: 10
+    labels: ["dependencies", "github-actions"]
+
+  # 2) Docker (updates für FROM-Basisimages)
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "05:15"
+      timezone: "Europe/Berlin"
+    open-pull-requests-limit: 10
+    labels: ["dependencies", "docker"]
