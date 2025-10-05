@@ -23,7 +23,7 @@ jobs:
           format: github
           file_or_dir: "."
       - name: hadolint
-        uses: hadolint/hadolint-action@v3.1.0
+        uses: hadolint/hadolint-action@v3.3.0
         with:
           dockerfile: Dockerfile-fail2ban
       - name: shellcheck
