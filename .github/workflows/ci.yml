@@ -111,8 +111,25 @@ jobs:
     needs: build-and-scan
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # ⬇️ Build the image locally for THIS job (fast dank GHA cache)
+      - name: Build image for E2E (load)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile-fail2ban
+          push: false
+          load: true
+          platforms: linux/amd64
+          tags: fail2ban-e2e:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Prepare e2e jail and test log
         run: |
@@ -137,9 +154,9 @@ jobs:
           docker run -d --name f2b-e2e \
             --cap-add NET_ADMIN --cap-add NET_RAW \
             --network host \
-            -v "${{ github.workspace }}/e2e/99-e2e.local:/etc/fail2ban/jail.d/99-e2e.local:ro" \
-            -v "${{ github.workspace }}/e2e/test-auth.log:/var/log/test-auth.log" \
-            fail2ban-ci:${{ github.sha }}
+            -v "$PWD/e2e/99-e2e.local:/etc/fail2ban/jail.d/99-e2e.local:ro" \
+            -v "$PWD/e2e/test-auth.log:/var/log/test-auth.log" \
+            fail2ban-e2e:${{ github.sha }}
 
       - name: Trigger a failed SSH auth in the test log
         run: |
@@ -150,7 +167,6 @@ jobs:
       - name: Assert ban is active
         run: |
           docker exec f2b-e2e fail2ban-client status sshd-e2e || true
-          # iptables chain should exist and contain the IP
           if ! docker exec f2b-e2e sh -lc 'iptables -n -L f2b-sshd-e2e 2>/dev/null | grep -q 203.0.113.77'; then
             echo "E2E failed: 203.0.113.77 not found in f2b-sshd-e2e chain"
             docker logs f2b-e2e || true
