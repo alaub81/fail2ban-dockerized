@@ -43,7 +43,7 @@ jobs:
 
       # 2) Trivy-Image-Scan (gate)
       - name: Trivy Image (generate SARIF)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@0.33.1
         with:
           image-ref: fail2ban-scan:${{ github.sha }}
           format: sarif
@@ -56,7 +56,7 @@ jobs:
           sarif_file: trivy-release.sarif
           category: trivy-release
       - name: Trivy Image (enforce severity)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@0.33.1
         with:
           image-ref: fail2ban-scan:${{ github.sha }}
           severity: CRITICAL,HIGH
