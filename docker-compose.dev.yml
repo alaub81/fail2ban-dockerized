@@ -22,10 +22,10 @@ services:
       - /etc/machine-id:/etc/machine-id:ro
     healthcheck:
       test: ["CMD-SHELL", "/usr/local/bin/healthcheck.sh"]
-      interval: 30s
+      interval: 10s
       timeout: 8s
       retries: 3
-      start_period: 45s
+      start_period: 15s
     logging:
       # Fail2ban-Logs into Host-Journal
       driver: journald
