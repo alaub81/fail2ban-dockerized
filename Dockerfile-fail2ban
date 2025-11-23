@@ -6,10 +6,10 @@ RUN apt-get update && \
   msmtp-mta mailutils tzdata && \
   apt-get clean && rm -rf /var/lib/apt/lists/*
 
-COPY fail2ban-entrypoint.sh /usr/local/bin/fail2ban-entrypoint.sh
+COPY --chmod=0755 /resources/fail2ban-entrypoint.sh /usr/local/bin/fail2ban-entrypoint.sh
+COPY --chmod=0755 /resources/healthcheck.sh /usr/local/bin/healthcheck.sh
 
 RUN set -eu; \
-  chmod +x /usr/local/bin/fail2ban-entrypoint.sh; \
   mkdir -p /etc/fail2ban; \
   printf '%s\n' \
   '[DEFAULT]' \
