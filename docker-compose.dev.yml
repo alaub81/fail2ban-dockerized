@@ -20,6 +20,12 @@ services:
       - /run/log/journal:/run/log/journal:ro
       - /var/log/journal:/var/log/journal:ro
       - /etc/machine-id:/etc/machine-id:ro
+    healthcheck:
+      test: ["CMD-SHELL", "/usr/local/bin/healthcheck.sh"]
+      interval: 30s
+      timeout: 8s
+      retries: 3
+      start_period: 45s
     logging:
       # Fail2ban-Logs into Host-Journal
       driver: journald
