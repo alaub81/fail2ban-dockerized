@@ -37,7 +37,10 @@ jobs:
         with: { fetch-depth: 0 }
       - id: select
         run: |
-          TAGS="$(git tag --list 'v*.*.*' --sort=-v:refname | head -n ${NUM_TAGS})"
+          set -euo pipefail
+          TAGS="$(git tag --list 'v*.*.*' --sort=-v:refname | head -n "${NUM_TAGS}")"
+          echo "Selected tags:"
+          printf '%s\n' "$TAGS"
           echo "matrix=$(printf '%s\n' "$TAGS" | jq -R . | jq -s .)" >> "$GITHUB_OUTPUT"
 
   rebuild-each-tag:
