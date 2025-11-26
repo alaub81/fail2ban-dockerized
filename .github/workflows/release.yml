@@ -1,6 +1,6 @@
 name: Release (build, scan, push)
 
-on:
+"on":
   push:
     tags: ["v*.*.*"]
   workflow_dispatch:
@@ -29,12 +29,13 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: ghcr.io/alaub81/fail2ban-dockerized
-      NUM_TAGS: "3" # wie viele letzte Release-Tags rebuilden?
+      NUM_TAGS: "3"
     outputs:
       matrix: ${{ steps.select.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
+        with:
+          fetch-depth: 0
       - id: select
         run: |
           set -euo pipefail
