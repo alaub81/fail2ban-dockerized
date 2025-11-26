@@ -125,6 +125,7 @@ Typical files:
 Set in `fail2ban.env` (see `fail2ban.env.example`):
 
 ```dotenv
+F2B_WAIT_BEFORE_START=15
 F2B_DESTEMAIL=alerts@yourdomain.tld
 MSMTP_HOST=mx.yourdomain.tld
 MSMTP_PORT=587

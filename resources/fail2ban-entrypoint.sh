@@ -13,11 +13,11 @@ set -e
 : "${MSMTP_STARTTLS:=on}"
 
 # Feste Wartezeit in Sekunden (optional)
-: "${WAIT_BEFORE_START:=0}"
+: "${F2B_WAIT_BEFORE_START:=0}"
 
-if [ "${WAIT_BEFORE_START}" -gt 0 ] 2>/dev/null; then
-  echo "entrypoint: sleeping ${WAIT_BEFORE_START}s before start"
-  sleep "${WAIT_BEFORE_START}"
+if [ "${F2B_WAIT_BEFORE_START}" -gt 0 ] 2>/dev/null; then
+  echo "entrypoint: sleeping ${F2B_WAIT_BEFORE_START}s before start"
+  sleep "${F2B_WAIT_BEFORE_START}"
 fi
 
 cat > /etc/msmtprc <<EOF
