@@ -161,11 +161,8 @@ jobs:
       fail-fast: false
       matrix:
         image:
-          - name: "kiwione-jiraparser"
-            dockerfile: "Dockerfile-jiraparser"
-            context: "."
-          - name: "kiwione-mailexport"
-            dockerfile: "Dockerfile-mailexport"
+          - name: "fail2ban-dockerized"
+            dockerfile: "Dockerfile-fail2ban"
             context: "."
 
     steps:
