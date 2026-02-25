@@ -13,25 +13,33 @@ permissions:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dockerfile:
+          - Dockerfile-fail2ban
     steps:
       - uses: actions/checkout@v6
-      - name: actionlint
-        uses: docker://rhysd/actionlint:latest
-      - name: yamllint
-        uses: ibiqlik/action-yamllint@v3
-        with:
-          format: github
-          file_or_dir: "."
-      - name: hadolint
+
+      - name: Hadolint
         uses: hadolint/hadolint-action@v3.3.0
         with:
-          dockerfile: Dockerfile-fail2ban
-      - name: shellcheck
+          dockerfile: ${{ matrix.dockerfile }}
+          config: .hadolint.yaml
+          failure-threshold: warning
+
+      - name: ShellCheck
         uses: ludeeus/action-shellcheck@2.0.0
         with:
           scandir: .
-        env:
-          SHELLCHECK_OPTS: -S style
+          ignore_names: "*.log\n*.sql\n"
+
+      - name: Yamllint
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          config_file: .yamllint.yaml
+          file_or_dir: ".\n"
+          strict: true
 
   build-and-scan:
     runs-on: ubuntu-latest
