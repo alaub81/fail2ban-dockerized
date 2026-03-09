@@ -48,13 +48,13 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
       - name: Set up Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       # Build lokales AMD64-Image und in den lokalen Docker-Daemon "loaden"
       - name: Build (load for scanning)
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: Dockerfile-fail2ban
@@ -68,7 +68,7 @@ jobs:
 
       # --- Trivy: FS-Scan (Repo) -> SARIF + Fail on HIGH/CRITICAL ---
       - name: Trivy FS (generate SARIF)
-        uses: aquasecurity/trivy-action@0.34.1
+        uses: aquasecurity/trivy-action@0.35.0
         with:
           scan-type: fs
           scan-ref: .
@@ -82,7 +82,7 @@ jobs:
           sarif_file: trivy-fs.sarif
           category: trivy-fs
       - name: Trivy FS (enforce severity)
-        uses: aquasecurity/trivy-action@0.34.1
+        uses: aquasecurity/trivy-action@0.35.0
         with:
           scan-type: fs
           scan-ref: .
@@ -93,7 +93,7 @@ jobs:
 
       # --- Trivy: Image-Scan (lokales Tag) -> SARIF + Fail on HIGH/CRITICAL ---
       - name: Trivy Image (generate SARIF)
-        uses: aquasecurity/trivy-action@0.34.1
+        uses: aquasecurity/trivy-action@0.35.0
         with:
           image-ref: fail2ban-ci:${{ github.sha }}
           format: sarif
@@ -106,7 +106,7 @@ jobs:
           sarif_file: trivy-image.sarif
           category: trivy-image
       - name: Trivy Image (enforce severity)
-        uses: aquasecurity/trivy-action@0.34.1
+        uses: aquasecurity/trivy-action@0.35.0
         with:
           image-ref: fail2ban-ci:${{ github.sha }}
           severity: CRITICAL,HIGH
@@ -123,13 +123,13 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
       - name: Set up Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       # ⬇️ Build the image locally for THIS job (fast dank GHA cache)
       - name: Build image for E2E (load)
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: Dockerfile-fail2ban
