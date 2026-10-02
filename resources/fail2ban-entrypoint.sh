@@ -5,6 +5,7 @@ set -e
 
 : "${MSMTP_HOST:=smtp.example.com}"
 : "${MSMTP_PORT:=587}"
+: "${MSMTP_AUTH:=on}"
 : "${MSMTP_FROM:=user@example.com}"
 : "${MSMTP_USER:=user@example.com}"
 : "${MSMTP_PASSWORD:=changeme}"
@@ -22,7 +23,7 @@ fi
 
 cat > /etc/msmtprc <<EOF
 defaults
-auth on
+auth ${MSMTP_AUTH}
 tls ${MSMTP_TLS}
 maildomain ${MSMTP_MAILDOMAIN}
 auto_from on
