@@ -17,7 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         dockerfile:
-          - Dockerfile-fail2ban
+          - resources/fail2ban/Dockerfile
     steps:
       - uses: actions/checkout@v7
 
@@ -56,8 +56,8 @@ jobs:
       - name: Build (load for scanning)
         uses: docker/build-push-action@v7
         with:
-          context: .
-          file: Dockerfile-fail2ban
+          context: resources/fail2ban
+          file: resources/fail2ban/Dockerfile
           push: false
           pull: true
           load: true
@@ -140,8 +140,8 @@ jobs:
       - name: Build image for E2E (load)
         uses: docker/build-push-action@v7
         with:
-          context: .
-          file: Dockerfile-fail2ban
+          context: resources/fail2ban
+          file: resources/fail2ban/Dockerfile
           push: false
           pull: true
           load: true

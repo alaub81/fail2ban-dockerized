@@ -1,8 +1,8 @@
 services:
   fail2ban:
     build:
-      context: .
-      dockerfile: Dockerfile-fail2ban
+      context: ./resources/fail2ban
+      dockerfile: Dockerfile
     image: fail2ban-journald:latest
     network_mode: host
     cap_add:

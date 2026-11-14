@@ -149,7 +149,7 @@ You can change the action in a `.local` file under `data/fail2ban/jail.d/`.
 ## Compose files
 
 - `docker-compose.yml` — pulls **ghcr.io/alaub81/fail2ban-dockerized:latest**
-- `docker-compose.dev.yml` — builds locally from `Dockerfile-fail2ban`
+- `docker-compose.dev.yml` — builds locally from `resources/fail2ban/Dockerfile`
 
 Both use:
 
@@ -205,3 +205,8 @@ logging:
 ## Changelog
 
 See Git commit history and release notes.
+
+Image build inputs live in `resources/fail2ban/`, including the Dockerfile and
+its `.dockerignore`. Compose, runtime configuration and repository tooling remain
+outside the image context.
+Release rebuilds also support the previous layout when building historical tags.

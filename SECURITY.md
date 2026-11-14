@@ -46,7 +46,7 @@ We will coordinate a disclosure timeline with you and publish a security advisor
 
 ### In scope
 
-- This repository: `Dockerfile-fail2ban`, `docker-compose*.yml`, entrypoint scripts, example configuration under `data/fail2ban/`, CI workflows, and the published container images `ghcr.io/alaub81/fail2ban-dockerized:*`.
+- This repository: `resources/fail2ban/Dockerfile`, `docker-compose*.yml`, entrypoint scripts, example configuration under `data/fail2ban/`, CI workflows, and the published container images `ghcr.io/alaub81/fail2ban-dockerized:*`.
 - Secrets handling (`.env` vs `.env.example`, Docker secrets), configuration rendering (msmtp, jail/fail2ban overrides), journald mounts, and iptables/nftables interactions initiated by the container.
 
 ### Out of scope
