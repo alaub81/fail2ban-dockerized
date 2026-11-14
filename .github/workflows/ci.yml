@@ -74,45 +74,54 @@ jobs:
           scan-ref: .
           format: sarif
           output: trivy-fs.sarif
-          exit-code: "0"
-          hide-progress: true
-      - name: Upload FS SARIF
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: trivy-fs.sarif
-          category: trivy-fs
-      - name: Trivy FS (enforce severity)
-        uses: aquasecurity/trivy-action@v0.36.0
-        with:
-          scan-type: fs
-          scan-ref: .
-          severity: CRITICAL
-          ignore-unfixed: true
-          exit-code: "1"
-          hide-progress: true
+          exit-code: '0'
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          ignore-unfixed: false
 
-      # --- Trivy: Image-Scan (lokales Tag) -> SARIF + Fail on HIGH/CRITICAL ---
       - name: Trivy Image (generate SARIF)
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: fail2ban-ci:${{ github.sha }}
           format: sarif
           output: trivy-image.sarif
-          exit-code: "0"
-          hide-progress: true
-      - name: Upload Image SARIF
-        uses: github/codeql-action/upload-sarif@v4
+          exit-code: '0'
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          ignore-unfixed: false
+
+      - name: Trivy FS (enforce severity)
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
-          sarif_file: trivy-image.sarif
-          category: trivy-image
+          scan-type: fs
+          scan-ref: .
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: '1'
+
       - name: Trivy Image (enforce severity)
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: fail2ban-ci:${{ github.sha }}
-          severity: CRITICAL
+          severity: HIGH,CRITICAL
           ignore-unfixed: true
-          exit-code: "1"
-          hide-progress: true
+          exit-code: '1'
+
+      - name: Upload SARIF
+        if: >-
+          ${{ always() && github.event.repository.private == false &&
+              hashFiles('trivy-fs.sarif') != '' }}
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: trivy-fs.sarif
+          category: trivy-fs-build-and-scan
+
+      - name: Upload SARIF
+        if: >-
+          ${{ always() && github.event.repository.private == false &&
+              hashFiles('trivy-image.sarif') != '' }}
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: trivy-image.sarif
+          category: trivy-image-build-and-scan
 
   e2e:
     name: E2E (ban via file backend)
